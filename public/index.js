@@ -172,6 +172,24 @@ for (var obj of deliveries) {
     obj.price = obj.distance * trucker.pricePerKm + obj.volume * trucker.pricePerVolume * mul;
     console.log(obj.price);
 }
+
 console.log(deliveries);
+
+/**
+ * Let's now compute the commission on the shipping price
+ */
+for(var obj of deliveries)
+{
+    var commission = 0.30 * obj.price;
+    obj.commission.insurance = 0.50 * commission;
+
+    /*
+     * We get the value of the treasury by truncating the division of the distance by 500
+     * In order to get the number of ranges of 500
+     */
+    obj.commission.treasury = Math.trunc(obj.distance/500);
+    obj.commission.convargo = commission - obj.commission.insurance - obj.commission.treasury;
+    console.log(obj.commission);
+}
 
 
