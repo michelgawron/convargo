@@ -150,9 +150,28 @@ const actors = [{
  * We basically run through the whole list, use a predicate to find the associated trucker and compute the right price
  */
 for (var obj of deliveries) {
-    var trucker = truckers.find(x => x.id == obj.truckerId);
-    obj.price = obj.distance * trucker.pricePerKm + obj.volume * trucker.pricePerVolume;
+    // Get the right trucker using a predicate
+    let trucker = truckers.find(x => x.id == obj.truckerId);
+
+    // Creating a multiplicator in order to decrease the price with respect to the volume ordered
+    let mul = 1;
+    if(obj.volume > 5)
+    {
+        mul = 0.9
+    }
+    else if(obj.volume > 10)
+    {
+        mul = 0.7
+    }
+    else if(obj.volume > 25)
+    {
+        mul = 0.5
+    }
+
+    // Computing the object price
+    obj.price = obj.distance * trucker.pricePerKm + obj.volume * trucker.pricePerVolume * mul;
     console.log(obj.price);
 }
 console.log(deliveries);
+
 
