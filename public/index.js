@@ -148,6 +148,7 @@ const actors = [{
 /*
  * Computing price property for each item on the deliveries list
  * We basically run through the whole list, use a predicate to find the associated trucker and compute the right price
+ * Here we also compute the reduction according to the volume ordered and the deductible reduction
  */
 for (var obj of deliveries) {
     // Get the right trucker using a predicate
@@ -170,6 +171,10 @@ for (var obj of deliveries) {
 
     // Computing the object price
     obj.price = obj.distance * trucker.pricePerKm + obj.volume * trucker.pricePerVolume * mul;
+
+    // Creating a new price if the deductible option is set to true, else we keep the same price
+    obj.price = (obj.options.deductibleReduction) ? (obj.price + obj.volume) : obj.price;
+
     console.log(obj.price);
 }
 
