@@ -202,7 +202,7 @@ for(var act of actors)
     let delivery = deliveries.find(x => x.id == act.deliveryId);
 
     // Charging the shipper
-    act.payment.find(x => x.who == "shipper").amount = delivery.price;
+    act.payment.find(x => x.who == "shipper").amount = delivery.price + delivery.priceDeductible;
 
     let commission = 0;
     for(var com in delivery.commission){
