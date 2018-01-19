@@ -173,12 +173,9 @@ for (var obj of deliveries) {
     obj.price = obj.distance * trucker.pricePerKm + obj.volume * trucker.pricePerVolume * mul;
 
     // Creating a new price if the deductible option is set to true, else we keep the same price
-    obj.price = (obj.options.deductibleReduction) ? (obj.price + obj.volume) : obj.price;
+    obj.priceDeductible = (obj.options.deductibleReduction) ? (obj.volume) : 0;
 
-    console.log(obj.price);
 }
-
-console.log(deliveries);
 
 /**
  * Let's now compute the commission on the shipping price
@@ -192,9 +189,34 @@ for(var obj of deliveries)
      * We get the value of the treasury by truncating the division of the distance by 500
      * In order to get the number of ranges of 500
      */
-    obj.commission.treasury = Math.trunc(obj.distance/500);
-    obj.commission.convargo = commission - obj.commission.insurance - obj.commission.treasury;
-    console.log(obj.commission);
+     obj.commission.treasury = Math.trunc(obj.distance/500);
+     obj.commission.convargo = commission - obj.commission.insurance - obj.commission.treasury;
 }
 
+/**
+ * Finally, let's pay the actors
+ */
+for(var act of actors)
+{
+    // Finding the right delivery
+    let delivery = deliveries.find(x => x.id == act.deliveryId);
 
+    // Charging the shipper
+    act.payment.find(x => x.who == "shipper").amount = delivery.price;
+
+    let commission = 0;
+    for(var com in delivery.commission){
+        commission += delivery.commission[com];
+    }
+    
+    // Paying the actors
+    act.payment.find(x => x.who == "trucker").amount = delivery.price - commission;
+    act.payment.find(x => x.who == "treasury").amount = delivery.commission.treasury;
+    act.payment.find(x => x.who == "insurance").amount = delivery.commission.insurance;
+    act.payment.find(x => x.who == "convargo").amount = delivery.commission.convargo + delivery.priceDeductible;
+}
+
+console.log(truckers)
+console.log(deliveries)
+console.log(actors)
+ 
